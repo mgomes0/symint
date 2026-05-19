@@ -179,6 +179,13 @@ def test_conversion_to_string():
     assert str(x/y) == '(42/?)'
 
 
+@pytest.mark.parametrize('new_range', [(-5, 5), (3, 3), (None, None), (None, 5), (-5, None)])
+def test_set_range(new_range):
+    i = symint.SymInt('i')
+    i.range = new_range
+    assert i.range == new_range
+
+
 def test_recompute_basic():
     i = symint.SymInt('i')
     j = i
