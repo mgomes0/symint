@@ -186,6 +186,27 @@ def test_set_range(new_range):
     assert i.range == new_range
 
 
+def test_set_range_exceptions():
+    i = symint.SymInt('i', min = -100, max = 100)
+    j = 2*i
+
+    with pytest.raises(RuntimeError):
+        j.range = (-5, 5)
+
+    assert i.range == (-100, 100)
+    assert j.range == (-200, 200)
+
+    with pytest.raises(RuntimeError):
+        j.range = (-100, 101)
+
+    assert i.range == (-100, 100)
+
+    with pytest.raises(RuntimeError):
+        j.range = (-101, 100)
+
+    assert i.range == (-100, 100)
+
+
 def test_recompute_basic():
     i = symint.SymInt('i')
     j = i

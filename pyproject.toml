@@ -7,7 +7,7 @@ name = "symint"
 version = "0.0.2"
 description = "A simple CAS for integer expressions, with an emphasis on code generation."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 authors = [{ name = "SymInt contributors" }]
 license = { text = "MIT" }
 keywords = ["CAS", "computer algebra", "symbolic math", "integer expressions", "code generation"]

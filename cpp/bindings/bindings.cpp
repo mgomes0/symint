@@ -77,14 +77,9 @@ PYBIND11_MODULE(_core, m) {
                 return out.cast<py::tuple>();
             },
             [](symint::SymInt& self, py::tuple tpl){
-                symint::IntRange new_rng(
-//                    (tpl[0] == py::none) ? -symint::INT_INF : tpl[0],
-//                    (tpl[1] == py::none) ? -symint::INT_INF : tpl[1],
-                    tpl[0].cast<std::int64_t>(),
-                    tpl[1].cast<std::int64_t>()
-                );
-
-                self.set_range(new_rng);
+                std::int64_t lo = tpl[0].is_none() ? -symint::INT_INF : tpl[0].cast<std::int64_t>();
+                std::int64_t hi = tpl[1].is_none() ?  symint::INT_INF : tpl[1].cast<std::int64_t>();
+                self.set_range(symint::IntRange(lo, hi));
             }
         )
         ;
