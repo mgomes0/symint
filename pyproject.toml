@@ -1,0 +1,87 @@
+[build-system]
+requires = ["scikit-build-core>=0.8", "pybind11>=2.12"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "symint"
+version = "0.0.1"
+description = "A simple CAS for integer expressions, with an emphasis on code generation."
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{ name = "SymInt contributors" }]
+license = { text = "MIT" }
+keywords = ["CAS", "computer algebra", "symbolic math", "integer expressions", "code generation"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: C++",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Software Development :: Compilers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+Homepage = "https://github.com/mgomes0/symint"
+Repository = "https://github.com/mgomes0/symint"
+Issues = "https://github.com/mgomes0/symint/issues"
+
+[project.optional-dependencies]
+test = ["pytest>=7", "tqdm"]
+
+[dependency-groups]
+test = ["pytest>=7", "tqdm"]
+dev = [{ include-group = "test" }, "scikit-build-core>=0.8", "pybind11>=2.12"]
+
+[tool.uv]
+no-build-isolation-package = ["symint"]
+
+[tool.scikit-build]
+minimum-version = "0.8"
+cmake.version = ">=3.18"
+wheel.packages = ["symint"]
+build-dir = "build/{wheel_tag}"
+editable.rebuild = true
+
+[tool.scikit-build.cmake.define]
+SYMINT_BUILD_PYTHON_BINDINGS = "ON"
+SYMINT_BUILD_CPP_TESTS = "OFF"
+
+# ---------------------------------------------------------------------------
+# cibuildwheel — builds binary wheels for PyPI across platforms/Python versions
+# ---------------------------------------------------------------------------
+[tool.cibuildwheel]
+# Test the wheel after building
+test-requires = ["pytest", "tqdm"]
+test-command = "pytest {project}/tests -x -q"
+
+# Build for CPython 3.9–3.13 only (no PyPy — pybind11 supports it but adds complexity)
+build = "cp3{9,10,11,12,13}-*"
+
+# Skip 32-bit builds and musllinux on arm (uncommon for scientific packages)
+skip = ["*-win32", "*-manylinux_i686", "*-musllinux_aarch64"]
+
+[tool.cibuildwheel.linux]
+# Install cmake + a C++17 compiler inside the manylinux container
+before-all = "yum install -y cmake || apt-get install -y cmake"
+
+[tool.cibuildwheel.macos]
+# Minimum macOS version for arm64 support
+environment = { MACOSX_DEPLOYMENT_TARGET = "11.0" }
+
+[tool.cibuildwheel.windows]
+# cmake is pre-installed on GitHub-hosted Windows runners; nothing extra needed
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-ra -s"

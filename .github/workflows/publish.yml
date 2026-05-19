@@ -1,0 +1,92 @@
+name: Publish to PyPI
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  # -------------------------------------------------------------------------
+  # Build binary wheels for Linux, macOS, Windows
+  # (commented out — re-enable when binary wheel publishing is ready)
+  # -------------------------------------------------------------------------
+  # build-wheels:
+  #   name: "Wheel · ${{ matrix.os }}"
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       os: [ubuntu-latest, macos-latest, windows-latest]
+  #
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #
+  #     - name: Set up QEMU (Linux arm64 emulation)
+  #       if: runner.os == 'Linux'
+  #       uses: docker/setup-qemu-action@v3
+  #       with:
+  #         platforms: arm64
+  #
+  #     - name: Build wheels
+  #       uses: pypa/cibuildwheel@v2.23.3
+  #       env:
+  #         # Build arm64 wheels for macOS on the macos-latest runner via cross-compilation
+  #         CIBW_ARCHS_MACOS: x86_64 arm64
+  #         # Build aarch64 wheels for Linux via QEMU emulation
+  #         CIBW_ARCHS_LINUX: x86_64 aarch64
+  #
+  #     - name: Upload wheel artifacts
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: wheels-${{ matrix.os }}
+  #         path: wheelhouse/*.whl
+
+  # -------------------------------------------------------------------------
+  # Build the source distribution (sdist)
+  # -------------------------------------------------------------------------
+  build-sdist:
+    name: "Source distribution (sdist)"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install build
+        run: pip install build
+
+      - name: Build sdist
+        run: python -m build --sdist
+
+      - name: Upload sdist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdist
+          path: dist/*.tar.gz
+
+  # -------------------------------------------------------------------------
+  # Publish everything to PyPI using Trusted Publishing (OIDC — no token needed)
+  # -------------------------------------------------------------------------
+  publish:
+    name: "Publish to PyPI"
+    needs: [build-sdist]
+    runs-on: ubuntu-latest
+    environment: pypi          # optional: gate behind a GitHub environment with approvals
+    permissions:
+      id-token: write          # required for OIDC Trusted Publishing
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
