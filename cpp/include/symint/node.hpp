@@ -178,6 +178,9 @@ public:
     }
 
     void set_range(IntRange rng) {
+        if (rng == _range)
+            return;
+
         _range = rng;
         if (known()) {
             clean_dependents();
