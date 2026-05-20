@@ -93,4 +93,12 @@ PYBIND11_MODULE(_core, m) {
     m.def("trunc_mod", [](const symint::SymInt x, const symint::SymInt y) {
         return x % y;
     }, "C-style modulus operation between SymInt objects", py::arg("x"), py::arg("y"));
+
+
+    py::module_ config_m = m.def_submodule("config", "SymInt global configuration");
+    config_m.def("set_print_as_c_code", &symint::config::set_print_as_c_code,
+                 "Set whether expressions print as C code instead of math notation",
+                 py::arg("value"));
+    config_m.def("get_print_as_c_code", &symint::config::get_print_as_c_code,
+                 "Return whether expressions print as C code instead of math notation");
 }
