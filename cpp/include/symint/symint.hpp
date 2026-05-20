@@ -47,6 +47,8 @@ protected:
 
     friend SymInt floor_mod(const SymInt x, const SymInt y);
 
+    friend std::ostream& operator<<(std::ostream& os, const SymInt& i);
+
 public:
     SymInt() : _node_ptr(Node::make_node()) {}
 
@@ -110,7 +112,7 @@ SymInt operator%(const SymInt x, const SymInt y) { return x._node_ptr % y._node_
 SymInt floor_mod(const SymInt x, const SymInt y) { return floor_mod(x._node_ptr, y._node_ptr); }
 
 
-std::ostream& operator<<(std::ostream& os, const SymInt& i) { return os << i.expr(); }
+std::ostream& operator<<(std::ostream& os, const SymInt& i) { return os << i._node_ptr; }
 
 
 }  // namespace symint
