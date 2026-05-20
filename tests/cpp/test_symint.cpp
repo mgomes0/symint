@@ -252,3 +252,15 @@ TEST(IntRangeAddition, Basic) {
 //    EXPECT_EQ(result.min(), -(kMax - 1));
 //    EXPECT_EQ(result.max(), kMax - 1);
 //}
+
+
+TEST(Config, PrintAsCCode) {
+    // Default is false
+    EXPECT_FALSE(symint::config::get_print_as_c_code());
+
+    symint::config::set_print_as_c_code(true);
+    EXPECT_TRUE(symint::config::get_print_as_c_code());
+
+    symint::config::set_print_as_c_code(false);
+    EXPECT_FALSE(symint::config::get_print_as_c_code());
+}
