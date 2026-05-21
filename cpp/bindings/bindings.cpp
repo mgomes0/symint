@@ -13,19 +13,19 @@ namespace py = pybind11;
 PYBIND11_MODULE(_core, m) {
     m.doc() = "SymInt C++ core bindings";
 
-//    py::enum_<symint::NodeKind>(m, "NodeKind")
-//        .value("Constant",          symint::NodeKind::Constant)
-//        .value("AnonymousVariable", symint::NodeKind::AnonymousVariable)
-//        .value("NamedVariable",     symint::NodeKind::NamedVariable)
-//        .value("Addition",          symint::NodeKind::Addition)
-//        .value("Subtraction",       symint::NodeKind::Subtraction)
-//        .value("Multiplication",    symint::NodeKind::Multiplication)
-//        .value("Division",          symint::NodeKind::Division)
-//        .value("FloorDivision",     symint::NodeKind::FloorDivision)
-//        .value("Modulus",           symint::NodeKind::Modulus)
-//        .value("FloorModulus",      symint::NodeKind::FloorModulus)
-//        .value("Negation",          symint::NodeKind::Negation)
-//        .export_values();
+
+    py::enum_<symint::NodeKind>(m, "NodeKind")
+        .value("Leaf"          , symint::NodeKind::Leaf          )
+        .value("Negation"      , symint::NodeKind::Negation      )
+        .value("Addition"      , symint::NodeKind::Addition      )
+        .value("Subtraction"   , symint::NodeKind::Subtraction   )
+        .value("Multiplication", symint::NodeKind::Multiplication)
+        .value("Division"      , symint::NodeKind::Division      )
+        .value("FloorDivision" , symint::NodeKind::FloorDivision )
+        .value("Modulus"       , symint::NodeKind::Modulus       )
+        .value("FloorModulus"  , symint::NodeKind::FloorModulus  )
+        .export_values();
+
 
     py::class_<symint::SymInt>(m, "SymInt")
         .def(py::init<>())

@@ -14,6 +14,7 @@
 #include "symint/classes.hpp"
 #include "symint/int_range.hpp"
 #include "symint/node.hpp"
+#include "symint/config.hpp"
 
 
 namespace symint {
