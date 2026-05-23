@@ -12,6 +12,7 @@
 #include "symint/classes.hpp"
 #include "symint/node_kind.hpp"
 #include "symint/int_range.hpp"
+#include "symint/config.hpp"
 
 
 namespace symint {
@@ -178,6 +179,9 @@ public:
     }
 
     void set_range(IntRange rng) {
+        if (rng == _range)
+            return;
+
         _range = rng;
         if (known()) {
             clean_dependents();
@@ -553,7 +557,10 @@ node_ptr_t floor_mod(const node_ptr_t x, const node_ptr_t y) {
 
 std::ostream& operator<<(std::ostream& os, const Node& n) {
     std::stringstream ss;
-    return os << n.expr(ss).str();
+    if (config::get_print_as_c_code())
+        return os << n.c_code(ss).str();
+    else
+        return os << n.expr(ss).str();
 }
 
 

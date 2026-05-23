@@ -13,19 +13,19 @@ namespace py = pybind11;
 PYBIND11_MODULE(_core, m) {
     m.doc() = "SymInt C++ core bindings";
 
-//    py::enum_<symint::NodeKind>(m, "NodeKind")
-//        .value("Constant",          symint::NodeKind::Constant)
-//        .value("AnonymousVariable", symint::NodeKind::AnonymousVariable)
-//        .value("NamedVariable",     symint::NodeKind::NamedVariable)
-//        .value("Addition",          symint::NodeKind::Addition)
-//        .value("Subtraction",       symint::NodeKind::Subtraction)
-//        .value("Multiplication",    symint::NodeKind::Multiplication)
-//        .value("Division",          symint::NodeKind::Division)
-//        .value("FloorDivision",     symint::NodeKind::FloorDivision)
-//        .value("Modulus",           symint::NodeKind::Modulus)
-//        .value("FloorModulus",      symint::NodeKind::FloorModulus)
-//        .value("Negation",          symint::NodeKind::Negation)
-//        .export_values();
+
+    py::enum_<symint::NodeKind>(m, "NodeKind")
+        .value("Leaf"          , symint::NodeKind::Leaf          )
+        .value("Negation"      , symint::NodeKind::Negation      )
+        .value("Addition"      , symint::NodeKind::Addition      )
+        .value("Subtraction"   , symint::NodeKind::Subtraction   )
+        .value("Multiplication", symint::NodeKind::Multiplication)
+        .value("Division"      , symint::NodeKind::Division      )
+        .value("FloorDivision" , symint::NodeKind::FloorDivision )
+        .value("Modulus"       , symint::NodeKind::Modulus       )
+        .value("FloorModulus"  , symint::NodeKind::FloorModulus  )
+        .export_values();
+
 
     py::class_<symint::SymInt>(m, "SymInt")
         .def(py::init<>())
@@ -77,14 +77,9 @@ PYBIND11_MODULE(_core, m) {
                 return out.cast<py::tuple>();
             },
             [](symint::SymInt& self, py::tuple tpl){
-                symint::IntRange new_rng(
-//                    (tpl[0] == py::none) ? -symint::INT_INF : tpl[0],
-//                    (tpl[1] == py::none) ? -symint::INT_INF : tpl[1],
-                    tpl[0].cast<std::int64_t>(),
-                    tpl[1].cast<std::int64_t>()
-                );
-
-                self.set_range(new_rng);
+                std::int64_t lo = tpl[0].is_none() ? -symint::INT_INF : tpl[0].cast<std::int64_t>();
+                std::int64_t hi = tpl[1].is_none() ?  symint::INT_INF : tpl[1].cast<std::int64_t>();
+                self.set_range(symint::IntRange(lo, hi));
             }
         )
         ;
@@ -98,4 +93,12 @@ PYBIND11_MODULE(_core, m) {
     m.def("trunc_mod", [](const symint::SymInt x, const symint::SymInt y) {
         return x % y;
     }, "C-style modulus operation between SymInt objects", py::arg("x"), py::arg("y"));
+
+
+    py::module_ config_m = m.def_submodule("config", "SymInt global configuration");
+    config_m.def("set_print_as_c_code", &symint::config::set_print_as_c_code,
+                 "Set whether expressions print as C code instead of math notation",
+                 py::arg("value"));
+    config_m.def("get_print_as_c_code", &symint::config::get_print_as_c_code,
+                 "Return whether expressions print as C code instead of math notation");
 }

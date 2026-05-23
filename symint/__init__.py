@@ -4,6 +4,7 @@ from ._core import (
     SymInt,
     trunc_div,
     trunc_mod,
+    config,
 )
 
 __version__ = '0.0.1'
@@ -12,5 +13,6 @@ __all__ = [
     'SymInt',
     'trunc_div',
     'trunc_mod',
+    'config',
     '__version__',
 ]

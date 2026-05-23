@@ -179,6 +179,34 @@ def test_conversion_to_string():
     assert str(x/y) == '(42/?)'
 
 
+@pytest.mark.parametrize('new_range', [(-5, 5), (3, 3), (None, None), (None, 5), (-5, None)])
+def test_set_range(new_range):
+    i = symint.SymInt('i')
+    i.range = new_range
+    assert i.range == new_range
+
+
+def test_set_range_exceptions():
+    i = symint.SymInt('i', min = -100, max = 100)
+    j = 2*i
+
+    with pytest.raises(RuntimeError):
+        j.range = (-5, 5)
+
+    assert i.range == (-100, 100)
+    assert j.range == (-200, 200)
+
+    with pytest.raises(RuntimeError):
+        j.range = (-100, 101)
+
+    assert i.range == (-100, 100)
+
+    with pytest.raises(RuntimeError):
+        j.range = (-101, 100)
+
+    assert i.range == (-100, 100)
+
+
 def test_recompute_basic():
     i = symint.SymInt('i')
     j = i
@@ -340,3 +368,23 @@ class TestExpressionRendering:
 
         assert str((i + j + k) * (i + j + k)) == '((i + j + k)*(i + j + k))'
         assert symint.trunc_div(i - j, j + k).c_code() == '((i - j)/(j + k))'
+
+
+class TestConfig:
+    def setup_method(self):
+        symint.config.set_print_as_c_code(False)
+
+    def teardown_method(self):
+        symint.config.set_print_as_c_code(False)
+
+    def test_default_is_false(self):
+        assert symint.config.get_print_as_c_code() is False
+
+    def test_set_true(self):
+        symint.config.set_print_as_c_code(True)
+        assert symint.config.get_print_as_c_code() is True
+
+    def test_set_false(self):
+        symint.config.set_print_as_c_code(True)
+        symint.config.set_print_as_c_code(False)
+        assert symint.config.get_print_as_c_code() is False
